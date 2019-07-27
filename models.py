@@ -7,10 +7,15 @@ class SimpleNet:
 
 
 
-    def __init__(self):
+    def __init__(self, error_f, error_f_d, activation, activation_d):
 
        self.w = np.random.randn()
        self.b = np.random.randn()
+
+       self.error_f = error_f
+       self.error_f_d = error_f_d
+       self.activation = activation
+       self.activation_d = activation_d
 
     def fit(self, x, y, epochs, lr = 0.1):
 
@@ -20,10 +25,10 @@ class SimpleNet:
 
 
             z = self.w * x + self.b
-            y_hat = sigmoid(z)
-            error = mean_squared_error(y, y_hat)
-            de_dy = mean_squared_error_derivative(y, y_hat)
-            dy_dz = sigmoid_derivative(z)
+            y_hat = self.activation(z)
+            error = self.error_f(y, y_hat)
+            de_dy = self.error_f_d(y, y_hat)
+            dy_dz = self.activation_d(z)
             dz_dw = x
 
             de_dw = de_dy * dy_dz * dz_dw
