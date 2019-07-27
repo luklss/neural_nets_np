@@ -9,16 +9,15 @@ class SimpleNet:
 
     def __init__(self):
 
-        self.w = np.random.randn()
-        self.b = np.random.randn()
+       self.w = np.random.randn()
+       self.b = np.random.randn()
 
-    def fit(self, x, y, epochs, lr = 0.01):
+    def fit(self, x, y, epochs, lr = 0.1):
 
 
         for i in range(epochs):
             print("epoch {} started".format(i))
 
-            output_deltas = np.zeros(len(x))
 
             z = self.w * x + self.b
             y_hat = sigmoid(z)
@@ -30,8 +29,18 @@ class SimpleNet:
             de_dw = de_dy * dy_dz * dz_dw
             de_db = de_dy * dy_dz
 
-            self.w = self.w - lr * de_dw
-            self.b = self.b - lr * de_db
+            self.w = self.w + (lr * de_dw)
+            self.b = self.b + (lr * de_db)
+
+            print("error was {}".format(error))
+#            print("z was {}".format(z))
+#            print("y_hat was {}".format(y_hat))
+#            print("de_dy was {}".format(de_dy))
+#            print("dy_dz was {}".format(dy_dz))
+#            print("dz_dw was {}".format(dz_dw))
+#            print("de_dw was {}".format(de_dw))
+#            print("new w was {}".format(self.w))
+#            print("new b was {}".format(self.b))
 
 
     def predict(self, x):
@@ -40,8 +49,7 @@ class SimpleNet:
 
 
 def mean_squared_error(y, y_hat):
-    assert len(y_hat) == len(y)
-    return ((y - y_hat) ** 2) / len(y)
+    return ((y - y_hat) ** 2) / 1
 
 
 def mean_squared_error_derivative(y, y_hat):
