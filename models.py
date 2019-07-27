@@ -1,15 +1,17 @@
 import numpy as np
 
 class SimpleNet:
-    """ Implements the simplest neural network I could think of.
-    A single neuron and bias: y = sigmoid(x) + b. It accepts
-    only single inputs and outputs a single number."""
+    """ Implements a very simple network for regression, in the form of
+    y = sigmoid(x*w1 + b) * w2. The second weight is used so the network
+    can output numbers outside of the range(0,1). It accepts only single input and output.
+    Not super useful, but it lustrates the concepts well."""
 
 
 
     def __init__(self, error_f, error_f_d, activation, activation_d):
 
-       self.w = np.random.randn()
+       self.w1 = np.random.randn()
+       self.w2 = np.random.randn()
        self.b = np.random.randn()
 
        self.error_f = error_f
@@ -24,17 +26,20 @@ class SimpleNet:
             print("epoch {} started".format(i))
 
 
-            z = self.w * x + self.b
-            y_hat = self.activation(z)
+            z = self.w1 * x + self.b
+            y_hat = self.activation(z) * self.w2
             error = self.error_f(y, y_hat)
             de_dy = self.error_f_d(y, y_hat)
             dy_dz = self.activation_d(z)
-            dz_dw = x
+            dy_dw2 = self.activation(z)
+            dz_dw1 = x
 
-            de_dw = de_dy * dy_dz * dz_dw
+            de_dw1 = de_dy * dy_dz * dz_dw1
+            de_dw2 = de_dy * dy_dw2
             de_db = de_dy * dy_dz
 
-            self.w = self.w + (lr * de_dw)
+            self.w1 = self.w1 + (lr * de_dw1)
+            self.w2 = self.w2 + (lr * de_dw2)
             self.b = self.b + (lr * de_db)
 
             print("error was {}".format(error))
@@ -42,14 +47,14 @@ class SimpleNet:
 #            print("y_hat was {}".format(y_hat))
 #            print("de_dy was {}".format(de_dy))
 #            print("dy_dz was {}".format(dy_dz))
-#            print("dz_dw was {}".format(dz_dw))
-#            print("de_dw was {}".format(de_dw))
-#            print("new w was {}".format(self.w))
+#            print("dz_dw1 was {}".format(dz_dw1))
+#            print("de_dw1 was {}".format(de_dw1))
+#            print("new w was {}".format(self.w1))
 #            print("new b was {}".format(self.b))
 
 
     def predict(self, x):
-        return sigmoid(self.w * x + self.b)
+        return sigmoid(self.w1 * x + self.b) * self.w2
 
 
 
