@@ -1,5 +1,42 @@
 import numpy as np
 
+
+class FullyConnectedNetwork:
+
+
+    def __init__(self, shape, error_f, error_f_d, activation, activation_d):
+
+        self.error_f = error_f
+        self.error_f_d = error_f_d
+        self.activation = activation
+        self.activation_d = activation_d
+        self.shape = shape
+        self.w = self.initialize_weights()
+        self.b = self.initialize_biases()
+
+
+    def initialize_weights(self):
+        weights = []
+
+        for i in range(0, len(self.shape) - 1):
+            weights.append(np.random.randn(self.shape[i + 1], self.shape[i]))
+
+        return weights
+
+
+    def initialize_biases(self):
+        biases = []
+
+        for i in range(1, len(self.shape)):
+            biases.append(np.random.randn(self.shape[i], 1))
+
+        return biases
+
+
+
+
+
+
 class SimpleNet:
     """ Implements a very simple network for regression, in the form of
     y = sigmoid(x*w1 + b) * w2. The second weight is used so the network
@@ -59,7 +96,7 @@ class SimpleNet:
 
 
 def mean_squared_error(y, y_hat):
-    return ((y - y_hat) ** 2) / 1
+   return ((y - y_hat) ** 2) / 1
 
 
 def mean_squared_error_derivative(y, y_hat):
