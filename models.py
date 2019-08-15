@@ -75,9 +75,9 @@ class SimpleNet:
             de_dw2 = de_dy * dy_dw2
             de_db = de_dy * dy_dz
 
-            self.w1 = self.w1 + (lr * de_dw1)
-            self.w2 = self.w2 + (lr * de_dw2)
-            self.b = self.b + (lr * de_db)
+            self.w1 = self.w1 - (lr * de_dw1)
+            self.w2 = self.w2 - (lr * de_dw2)
+            self.b = self.b - (lr * de_db)
 
             print("error was {}".format(error))
 #            print("z was {}".format(z))
@@ -96,11 +96,11 @@ class SimpleNet:
 
 
 def mean_squared_error(y, y_hat):
-   return ((y - y_hat) ** 2) / 1
+   return ((y_hat - y) ** 2) / 1
 
 
 def mean_squared_error_derivative(y, y_hat):
-    return y - y_hat
+    return y_hat - y
 
 
 
