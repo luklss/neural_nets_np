@@ -1,7 +1,7 @@
 import numpy as np
 
 
-class FullyConnectedNetwork:
+class FullyConnectedNet:
 
 
     def __init__(self, shape, error_f, error_f_d, activation, activation_d):
@@ -31,6 +31,68 @@ class FullyConnectedNetwork:
             biases.append(np.random.randn(self.shape[i], 1))
 
         return biases
+
+    def predict(self, x):
+
+        a = x.T
+
+        for i in range(len(self.w)):
+            a = self.activation(np.dot(self.w[i], a) + self.b[i])
+
+        return a
+
+#    def fit(self, x, y, epochs, lr = 0.1):
+#
+#
+#        for i in range(epochs):
+#
+#            print("epoch {} started".format(i))
+#
+#            z = []
+#            a = []
+#
+#            de_dw = np.zeros(self.n_layers)
+#            de_db = np.zeros(self.n_layers)
+#
+#            # forward pass
+#
+#            a_previous = x
+#            for i in range(self.n_layers):
+#                z.append(self.w[i] * a_previous + self.b[i])
+#                a.append(self.activation(z[i]))
+#                a_previous = a[i]
+#
+#
+#            # backpropagation
+#            for i in reversed(range(self.n_layers)):
+#
+#                # let's first get the delta, or de_dz
+#                if i == self.n_layers - 1: # if it is the output layer
+#                    error = self.error_f(y, a[i])
+#                    de_da = self.error_f_d(y, a[i])
+#                    da_dz = self.activation_d(z[i])
+#                    de_dz = de_da * da_dz
+#
+#
+#                else:
+#                    da_dz = self.activation_d(z[i])
+#                    de_dz = de_dz * self.w[i + 1] * da_dz
+#
+#
+#                # now we can calculate the derivatives for w and b
+#                de_db[i] = de_dz
+#                dz_dw = a[i - 1]
+#                de_dw[i] = de_dz * dz_dw
+#
+#
+#            self.w = self.w - (lr * de_dw)
+#            self.b = self.b - (lr * de_db)
+#
+#
+#
+#
+#            print("error was {}".format(error))
+#
 
 
 
@@ -163,7 +225,7 @@ class SimpleNet:
 
 
 def mean_squared_error(y, y_hat):
-   return ((y_hat - y) ** 2) / 1
+    return ((y_hat - y) ** 2) / 1
 
 
 def mean_squared_error_derivative(y, y_hat):
