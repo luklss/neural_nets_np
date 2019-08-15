@@ -41,58 +41,70 @@ class FullyConnectedNet:
 
         return a
 
-#    def fit(self, x, y, epochs, lr = 0.1):
-#
-#
-#        for i in range(epochs):
-#
-#            print("epoch {} started".format(i))
-#
-#            z = []
-#            a = []
-#
-#            de_dw = np.zeros(self.n_layers)
-#            de_db = np.zeros(self.n_layers)
-#
-#            # forward pass
-#
-#            a_previous = x
-#            for i in range(self.n_layers):
-#                z.append(self.w[i] * a_previous + self.b[i])
-#                a.append(self.activation(z[i]))
-#                a_previous = a[i]
-#
-#
-#            # backpropagation
-#            for i in reversed(range(self.n_layers)):
-#
-#                # let's first get the delta, or de_dz
-#                if i == self.n_layers - 1: # if it is the output layer
-#                    error = self.error_f(y, a[i])
-#                    de_da = self.error_f_d(y, a[i])
-#                    da_dz = self.activation_d(z[i])
-#                    de_dz = de_da * da_dz
-#
-#
-#                else:
-#                    da_dz = self.activation_d(z[i])
-#                    de_dz = de_dz * self.w[i + 1] * da_dz
-#
-#
-#                # now we can calculate the derivatives for w and b
-#                de_db[i] = de_dz
-#                dz_dw = a[i - 1]
-#                de_dw[i] = de_dz * dz_dw
-#
-#
-#            self.w = self.w - (lr * de_dw)
-#            self.b = self.b - (lr * de_db)
-#
-#
-#
-#
-#            print("error was {}".format(error))
-#
+
+    def fit(self, x, y, epochs, lr = 0.1):
+
+
+        for i in range(epochs):
+
+            print("epoch {} started".format(i))
+
+            z = []
+            a = []
+
+
+            de_dw = [np.zeros(w.shape) for w in self.w]
+            de_db = [np.zeros(b.shape) for b in self.b]
+
+            # forward pass
+
+            a_previous = x.T
+            for i in range(len(self.w)):
+
+                z.append(np.dot(self.w[i], a_previous) + self.b[i])
+                a.append(self.activation(z[i]))
+                a_previous = a[i]
+                #print("z is {}".format(z))
+                #print("a is {}".format(a))
+
+
+
+            # backpropagation
+            for i in reversed(range(len(self.w))):
+
+                print("layer {}".format(i))
+
+                # let's first get the delta, or de_dz
+                if i == len(self.w) - 1: # if it is the output layer
+                    error = self.error_f(y, a[i])
+                    de_da = self.error_f_d(y, a[i])
+                    da_dz = self.activation_d(z[i])
+                    de_dz = de_da * da_dz
+
+                    print("error is {}".format(de_dz))
+                    print("de_da is {}".format(de_da))
+                    print("da_dz is {}".format(da_dz))
+                    print("de_dz is {}".format(de_dz))
+
+                else:
+                    da_dz = self.activation_d(z[i])
+                    print("da_dz is {}".format(da_dz))
+                    print("w + 1 is {}".format(self.w[i + 1].T))
+
+                    de_dz = np.dot(de_dz, self.w[i + 1].T) * da_dz
+
+
+                # now we can calculate the derivatives for w and b
+                de_db[i] = de_dz
+                dz_dw = a[i - 1]
+                de_dw[i] = np.dot(de_dz, dz_dw.T)
+
+            self.w = [w - (lr * de_dw_i) for w, de_dw in zip(self.w,de_dw)]
+            self.b = [b - (lr * de_db_i) for b, de_db in zip(self.w,de_db)]
+
+
+            print("error was {}".format(error))
+
 
 
 
