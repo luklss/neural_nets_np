@@ -35,6 +35,81 @@ class FullyConnectedNetwork:
 
 
 
+class FlatNet:
+
+    def __init__(self, n_layers, error_f, error_f_d, activation, activation_d):
+        self.error_f = error_f
+        self.error_f_d = error_f_d
+        self.activation = activation
+        self.activation_d = activation_d
+        self.n_layers = n_layers
+        self.w = np.random.randn(self.n_layers) # one weight (neuron) per layer
+        self.b = np.random.randn(self.n_layers) # one bias (neuron) per layer
+
+
+
+    def predict(self, x):
+
+        a = x
+
+        for i in range(self.n_layers):
+            a = self.activation(self.w[i] * a + self.b[i])
+
+        return a
+
+    def fit(self, x, y, epochs, lr = 0.1):
+
+
+        for i in range(epochs):
+
+            print("epoch {} started".format(i))
+
+            z = []
+            a = []
+
+            de_dw = np.zeros(self.n_layers)
+            de_db = np.zeros(self.n_layers)
+
+            # forward pass
+
+            a_previous = x
+            for i in range(self.n_layers):
+                z.append(self.w[i] * a_previous + self.b[i])
+                a.append(self.activation(z[i]))
+                a_previous = a[i]
+
+
+            # backpropagation
+            for i in reversed(range(self.n_layers)):
+
+                # let's first get the delta, or de_dz
+                if i == self.n_layers - 1: # if it is the output layer
+                    error = self.error_f(y, a[i])
+                    de_da = self.error_f_d(y, a[i])
+                    da_dz = self.activation_d(z[i])
+                    de_dz = de_da * da_dz
+
+
+                else:
+                    da_dz = self.activation_d(z[i])
+                    de_dz = de_dz * self.w[i + 1] * da_dz
+
+
+                # now we can calculate the derivatives for w and b
+                de_db[i] = de_dz
+                dz_dw = a[i - 1]
+                de_dw[i] = de_dz * dz_dw
+
+
+            self.w = self.w - (lr * de_dw)
+            self.b = self.b - (lr * de_db)
+
+
+
+
+            print("error was {}".format(error))
+
+
 
 
 class SimpleNet:
@@ -80,18 +155,10 @@ class SimpleNet:
             self.b = self.b - (lr * de_db)
 
             print("error was {}".format(error))
-#            print("z was {}".format(z))
-#            print("y_hat was {}".format(y_hat))
-#            print("de_dy was {}".format(de_dy))
-#            print("dy_dz was {}".format(dy_dz))
-#            print("dz_dw1 was {}".format(dz_dw1))
-#            print("de_dw1 was {}".format(de_dw1))
-#            print("new w was {}".format(self.w1))
-#            print("new b was {}".format(self.b))
 
 
     def predict(self, x):
-        return sigmoid(self.w1 * x + self.b) * self.w2
+        return self.activation(self.w1 * x + self.b) * self.w2
 
 
 
