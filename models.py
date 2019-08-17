@@ -64,8 +64,6 @@ class FullyConnectedNet:
                 z.append(np.dot(self.w[i], a_previous) + self.b[i])
                 a.append(self.activation(z[i]))
                 a_previous = a[i]
-                #print("z is {}".format(z))
-                #print("a is {}".format(a))
 
 
 
@@ -81,15 +79,9 @@ class FullyConnectedNet:
                     da_dz = self.activation_d(z[i])
                     de_dz = de_da * da_dz
 
-#                    print("error is {}".format(de_dz))
-#                    print("de_da is {}".format(de_da))
-#                    print("da_dz is {}".format(da_dz))
-#                    print("de_dz is {}".format(de_dz))
 
                 else:
                     da_dz = self.activation_d(z[i])
-#                    print("da_dz is {}".format(da_dz))
-#                    print("w + 1 is {}".format(self.w[i + 1].T))
 #
                     de_dz = np.dot( self.w[i + 1].T, de_dz) * da_dz
 
