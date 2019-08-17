@@ -81,17 +81,17 @@ class FullyConnectedNet:
                     da_dz = self.activation_d(z[i])
                     de_dz = de_da * da_dz
 
-                    print("error is {}".format(de_dz))
-                    print("de_da is {}".format(de_da))
-                    print("da_dz is {}".format(da_dz))
-                    print("de_dz is {}".format(de_dz))
+#                    print("error is {}".format(de_dz))
+#                    print("de_da is {}".format(de_da))
+#                    print("da_dz is {}".format(da_dz))
+#                    print("de_dz is {}".format(de_dz))
 
                 else:
                     da_dz = self.activation_d(z[i])
-                    print("da_dz is {}".format(da_dz))
-                    print("w + 1 is {}".format(self.w[i + 1].T))
-
-                    de_dz = np.dot(de_dz, self.w[i + 1].T) * da_dz
+#                    print("da_dz is {}".format(da_dz))
+#                    print("w + 1 is {}".format(self.w[i + 1].T))
+#
+                    de_dz = np.dot( self.w[i + 1].T, de_dz) * da_dz
 
 
                 # now we can calculate the derivatives for w and b
@@ -99,8 +99,8 @@ class FullyConnectedNet:
                 dz_dw = a[i - 1]
                 de_dw[i] = np.dot(de_dz, dz_dw.T)
 
-            self.w = [w - (lr * de_dw_i) for w, de_dw in zip(self.w,de_dw)]
-            self.b = [b - (lr * de_db_i) for b, de_db in zip(self.w,de_db)]
+            self.w = [w - (lr * de_dw_i) for w, de_dw_i in zip(self.w,de_dw)]
+            self.b = [b - (lr * de_db_i) for b, de_db_i in zip(self.b,de_db)]
 
 
             print("error was {}".format(error))
