@@ -31,7 +31,6 @@ This is the real deal, it has as many layers as you want and with as many neuron
 ```python
 from sklearn import datasets
 from sklearn.model_selection import train_test_split
-
 data = datasets.make_moons(n_samples = 100)
 x = data[0]
 y = np.expand_dims(data[1], 1)
