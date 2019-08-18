@@ -39,7 +39,7 @@ class FullyConnectedNet:
         for i in range(len(self.w)):
             a = self.activation(np.dot(self.w[i], a) + self.b[i])
 
-        return a.T
+        return a.round().T
 
 
     def fit(self, x, y, epochs, lr = 0.1):
