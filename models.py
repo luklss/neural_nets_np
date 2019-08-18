@@ -42,12 +42,15 @@ class FullyConnectedNet:
         return a.round().T
 
 
-    def fit(self, x, y, epochs, lr = 0.1):
+    def fit(self, x, y, epochs, lr = 0.1, x_test = None, y_test = None):
+
+        size = x.shape[0]
 
 
         for i in range(epochs):
 
             print("epoch {} started".format(i))
+           # print([b.shape for b in self.b])
 
             z = []
             a = []
@@ -84,18 +87,25 @@ class FullyConnectedNet:
 
 
                 # now we can calculate the derivatives for w and b
-                de_db[i] = de_dz
+                de_db[i] = np.sum(de_dz, axis=1, keepdims=True) / size
                 dz_dw = a[i - 1]
-                de_dw[i] = np.dot(de_dz, dz_dw.T)
+                de_dw[i] = np.dot(de_dz, dz_dw.T) / size
+
 
             self.w = [w - (lr * de_dw_i) for w, de_dw_i in zip(self.w,de_dw)]
             self.b = [b - (lr * de_db_i) for b, de_db_i in zip(self.b,de_db)]
 
 
             error = self.error_f(y.T, a[-1])
+            acc_train = self.accuracy(x, y)
             print("error was {}".format(error))
+            print("train accuracy was {}".format(acc_train))
+            if x_test is not None and y_test is not None:
+                acc_test = self.accuracy(x_test, y_test)
+                print("test accuracy was {}".format(acc_test))
 
-
+    def accuracy(self, x, y):
+        return np.sum(self.predict(x) == y) / len(x)
 
 
 
@@ -246,5 +256,6 @@ def sigmoid(x):
 
 def sigmoid_derivative(x):
     return sigmoid(x) * (1 - sigmoid(x))
+
 
 
