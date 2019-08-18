@@ -1,7 +1,7 @@
 import numpy as np
 
 
-class FullyConnectedNetwork:
+class FullyConnectedNet:
 
 
     def __init__(self, shape, error_f, error_f_d, activation, activation_d):
@@ -13,6 +13,9 @@ class FullyConnectedNetwork:
         self.shape = shape
         self.w = self.initialize_weights()
         self.b = self.initialize_biases()
+        self.error = []
+        self.accuracy_train = []
+        self.accuracy_test = []
 
 
     def initialize_weights(self):
@@ -32,6 +35,86 @@ class FullyConnectedNetwork:
 
         return biases
 
+    def predict(self, x):
+
+        a = x.T
+
+        for i in range(len(self.w)):
+            a = self.activation(np.dot(self.w[i], a) + self.b[i])
+
+        return a.round().T
+
+
+    def fit(self, x, y, epochs, lr = 0.1, x_test = None, y_test = None):
+
+        size = x.shape[0]
+        self.error = []
+        self.accuracy_train = []
+        self.accuracy_test = []
+
+
+        for i in range(epochs):
+
+            print("epoch {} started".format(i))
+           # print([b.shape for b in self.b])
+
+            z = []
+            a = []
+
+
+            de_dw = [np.zeros(w.shape) for w in self.w]
+            de_db = [np.zeros(b.shape) for b in self.b]
+
+            # forward pass
+
+            a_previous = x.T
+            for i in range(len(self.w)):
+
+                z.append(np.dot(self.w[i], a_previous) + self.b[i])
+                a.append(self.activation(z[i]))
+                a_previous = a[i]
+
+
+
+            # backpropagation
+            for i in reversed(range(len(self.w))):
+
+                # let's first get the delta, or de_dz
+                if i == len(self.w) - 1: # if it is the output layer
+                    de_da = self.error_f_d(y.T, a[i])
+                    da_dz = self.activation_d(z[i])
+                    de_dz = de_da * da_dz
+
+
+                else:
+                    da_dz = self.activation_d(z[i])
+#
+                    de_dz = np.dot( self.w[i + 1].T, de_dz) * da_dz
+
+
+                # now we can calculate the derivatives for w and b
+                de_db[i] = np.sum(de_dz, axis=1, keepdims=True) / size
+                dz_dw = a[i - 1]
+                de_dw[i] = np.dot(de_dz, dz_dw.T) / size
+
+
+            self.w = [w - (lr * de_dw_i) for w, de_dw_i in zip(self.w,de_dw)]
+            self.b = [b - (lr * de_db_i) for b, de_db_i in zip(self.b,de_db)]
+
+
+            error = self.error_f(y.T, a[-1])
+            self.error.append(error)
+            acc_train = self.accuracy(x, y)
+            self.accuracy_train.append(acc_train)
+            print("error was {}".format(error))
+            print("train accuracy was {}".format(acc_train))
+            if x_test is not None and y_test is not None:
+                acc_test = self.accuracy(x_test, y_test)
+                self.accuracy_test.append(acc_test)
+                print("test accuracy was {}".format(acc_test))
+
+    def accuracy(self, x, y):
+        return np.sum(self.predict(x) == y) / len(x)
 
 
 
@@ -162,11 +245,16 @@ class SimpleNet:
 
 
 
-def mean_squared_error(y, y_hat):
-   return ((y_hat - y) ** 2) / 1
+def mean_square_error_1d(y, y_hat):
+    return ((y_hat - y) ** 2) / 1
 
 
-def mean_squared_error_derivative(y, y_hat):
+def mean_square_error(y, y_hat):
+    n = y.shape[0]
+    return np.sum((y_hat - y) ** 2) / n
+
+
+def mean_square_error_derivative(y, y_hat):
     return y_hat - y
 
 
@@ -177,5 +265,6 @@ def sigmoid(x):
 
 def sigmoid_derivative(x):
     return sigmoid(x) * (1 - sigmoid(x))
+
 
 
