@@ -13,6 +13,7 @@ class FullyConnectedNet:
         self.shape = shape
         self.w = self.initialize_weights()
         self.b = self.initialize_biases()
+        self.error = []
 
 
     def initialize_weights(self):
@@ -45,6 +46,7 @@ class FullyConnectedNet:
     def fit(self, x, y, epochs, lr = 0.1, x_test = None, y_test = None):
 
         size = x.shape[0]
+        self.error = []
 
 
         for i in range(epochs):
@@ -97,6 +99,7 @@ class FullyConnectedNet:
 
 
             error = self.error_f(y.T, a[-1])
+            self.error.append(error)
             acc_train = self.accuracy(x, y)
             print("error was {}".format(error))
             print("train accuracy was {}".format(acc_train))
