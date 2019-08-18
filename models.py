@@ -72,7 +72,6 @@ class FullyConnectedNet:
 
                 # let's first get the delta, or de_dz
                 if i == len(self.w) - 1: # if it is the output layer
-                    error = self.error_f(y.T, a[i])
                     de_da = self.error_f_d(y.T, a[i])
                     da_dz = self.activation_d(z[i])
                     de_dz = de_da * da_dz
@@ -93,6 +92,7 @@ class FullyConnectedNet:
             self.b = [b - (lr * de_db_i) for b, de_db_i in zip(self.b,de_db)]
 
 
+            error = self.error_f(y.T, a[-1])
             print("error was {}".format(error))
 
 
