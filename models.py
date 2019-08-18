@@ -39,7 +39,7 @@ class FullyConnectedNet:
         for i in range(len(self.w)):
             a = self.activation(np.dot(self.w[i], a) + self.b[i])
 
-        return a
+        return a.T
 
 
     def fit(self, x, y, epochs, lr = 0.1):
@@ -70,12 +70,10 @@ class FullyConnectedNet:
             # backpropagation
             for i in reversed(range(len(self.w))):
 
-                print("layer {}".format(i))
-
                 # let's first get the delta, or de_dz
                 if i == len(self.w) - 1: # if it is the output layer
-                    error = self.error_f(y, a[i])
-                    de_da = self.error_f_d(y, a[i])
+                    error = self.error_f(y.T, a[i])
+                    de_da = self.error_f_d(y.T, a[i])
                     da_dz = self.activation_d(z[i])
                     de_dz = de_da * da_dz
 
@@ -228,11 +226,16 @@ class SimpleNet:
 
 
 
-def mean_squared_error(y, y_hat):
+def mean_square_error_1d(y, y_hat):
     return ((y_hat - y) ** 2) / 1
 
 
-def mean_squared_error_derivative(y, y_hat):
+def mean_square_error(y, y_hat):
+    n = y.shape[0]
+    return np.sum((y_hat - y) ** 2) / n
+
+
+def mean_square_error_derivative(y, y_hat):
     return y_hat - y
 
 
