@@ -79,6 +79,8 @@ class FullyConnectedNet:
             # backpropagation
             for i in reversed(range(len(self.w))):
 
+                print("layer is {}".format(i))
+
                 # let's first get the delta, or de_dz
                 if i == len(self.w) - 1: # if it is the output layer
                     de_da = self.error_f_d(y.T, a[i])
