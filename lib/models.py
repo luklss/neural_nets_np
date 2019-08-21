@@ -95,7 +95,7 @@ class FullyConnectedNet:
                 # now we can calculate the derivatives for w and b
                 de_db[i] = np.sum(de_dz, axis=1, keepdims=True) / size
                 dz_dw = a[i - 1]
-                de_dw[i] = np.dot(de_dz, dz_dw.T) / size
+                de_dw[i] = np.dot(de_dz, dz_dw.T) 
 
 
             self.w = [w - (lr * de_dw_i) for w, de_dw_i in zip(self.w,de_dw)]
