@@ -85,6 +85,7 @@ class FullyConnectedNet:
                     da_dz = self.activation_d(z[i])
                     de_dz = de_da * da_dz
 
+                    print("de_da is {}".format(de_da.shape))
 
                 else:
                     da_dz = self.activation_d(z[i])
@@ -95,8 +96,13 @@ class FullyConnectedNet:
                 # now we can calculate the derivatives for w and b
                 de_db[i] = np.sum(de_dz, axis=1, keepdims=True) / size
                 dz_dw = a[i - 1]
-                de_dw[i] = np.dot(de_dz, dz_dw.T) 
+                de_dw[i] = np.dot(de_dz, dz_dw.T)
 
+                print("da_dz is {}".format(da_dz.shape))
+                print("de_dz is {}".format(de_dz.shape))
+                print("de_db is {}".format(de_db[i].shape))
+                print("dz_dw is {}".format(dz_dw.shape))
+                print("de_dw is {}".format(de_dw[i].shape))
 
             self.w = [w - (lr * de_dw_i) for w, de_dw_i in zip(self.w,de_dw)]
             self.b = [b - (lr * de_db_i) for b, de_db_i in zip(self.b,de_db)]
