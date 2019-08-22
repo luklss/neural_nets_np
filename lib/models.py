@@ -22,7 +22,7 @@ class FullyConnectedNet:
         weights = []
 
         for i in range(0, len(self.shape) - 1):
-            weights.append(np.random.randn(self.shape[i + 1], self.shape[i]))
+            weights.append(np.random.randn(self.shape[i ], self.shape[i + 1]))
 
         return weights
 
@@ -31,18 +31,18 @@ class FullyConnectedNet:
         biases = []
 
         for i in range(1, len(self.shape)):
-            biases.append(np.random.randn(self.shape[i], 1))
+            biases.append(np.random.randn(1, self.shape[i]))
 
         return biases
 
     def predict(self, x):
 
-        a = x.T
+        a = x
 
         for i in range(len(self.w)):
-            a = self.activation(np.dot(self.w[i], a) + self.b[i])
+            a = self.activation(np.dot(a, self.w[i]) + self.b[i])
 
-        return a.round().T
+        return a.round()
 
 
     def fit(self, x, y, epochs, lr = 0.1, x_test = None, y_test = None):
@@ -67,10 +67,10 @@ class FullyConnectedNet:
 
             # forward pass
 
-            a_previous = x.T
+            a_previous = x
             for i in range(len(self.w)):
 
-                z.append(np.dot(self.w[i], a_previous) + self.b[i])
+                z.append(np.dot(a_previous, self.w[i]) + self.b[i])
                 a.append(self.activation(z[i]))
                 a_previous = a[i]
 
@@ -81,7 +81,7 @@ class FullyConnectedNet:
 
                 # let's first get the delta, or de_dz
                 if i == len(self.w) - 1: # if it is the output layer
-                    de_da = self.error_f_d(y.T, a[i])
+                    de_da = self.error_f_d(y, a[i])
                     da_dz = self.activation_d(z[i])
                     de_dz = de_da * da_dz
 
@@ -89,20 +89,20 @@ class FullyConnectedNet:
                 else:
                     da_dz = self.activation_d(z[i])
 #
-                    de_dz = np.dot( self.w[i + 1].T, de_dz) * da_dz
+                    de_dz = np.dot(de_dz, self.w[i + 1].T) * da_dz
 
 
                 # now we can calculate the derivatives for w and b
-                de_db[i] = np.sum(de_dz, axis=1, keepdims=True) / size
+                de_db[i] = np.sum(de_dz, axis=0, keepdims=True) / size
                 dz_dw = a[i - 1]
-                de_dw[i] = np.dot(de_dz, dz_dw.T) / size
+                de_dw[i] = np.dot( dz_dw.T, de_dz) / size
 
 
             self.w = [w - (lr * de_dw_i) for w, de_dw_i in zip(self.w,de_dw)]
             self.b = [b - (lr * de_db_i) for b, de_db_i in zip(self.b,de_db)]
 
 
-            error = self.error_f(y.T, a[-1])
+            error = self.error_f(y, a[-1])
             self.error.append(error)
             acc_train = self.accuracy(x, y)
             self.accuracy_train.append(acc_train)
